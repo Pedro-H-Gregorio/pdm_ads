@@ -16,7 +16,7 @@ interface ListTaskProps {
 
 export default function ListTask({ tasks, removeItem }: ListTaskProps) {
   return (
-    <View>
+    <View style={style.content}>
       <FlatList
         data={tasks}
         renderItem={({ item }) => (
@@ -39,5 +39,10 @@ const style = StyleSheet.create({
     padding: 20,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  content: {
+    width: "100vw",
   },
 });

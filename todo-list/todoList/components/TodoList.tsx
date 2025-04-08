@@ -12,12 +12,24 @@ export default function TodoList() {
   }
 
   return (
-    <View style={{ display: "flex", width: "100%" }}>
+    <View
+      style={{
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        justifyContent: "start",
+        justifyItems: "start",
+        alignItems: "start",
+      }}
+    >
       <View
         style={{
           flexDirection: "row",
-          margin: "auto",
-          zIndex: 0,
+          display: "inline-flex",
+          height: "auto",
+          justifyContent: "center",
+          alignItems: "stretch",
+          width: "100vw",
         }}
       >
         <TextInput
@@ -25,6 +37,7 @@ export default function TodoList() {
             height: 40,
             borderColor: "gray",
             borderWidth: 1,
+            width: "94vw",
           }}
           onChangeText={(el) => settitle(el)}
           placeholder="Digite sua tarefa aqui:"
@@ -39,7 +52,6 @@ export default function TodoList() {
               id: String(lastId + 1),
               title: title,
             };
-
             setTasks([...tasks, novaTarefa]);
             settitle("");
           }}
