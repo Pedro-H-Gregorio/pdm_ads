@@ -6,6 +6,10 @@ interface IQuadradoProps {
   disable: boolean;
   position: Number;
   funcao: Function;
+  tabuleiro: Array<String>;
+  setVez: Function;
+  setStatus: Function;
+  setTabuleiro: Function;
 }
 
 export default function Quadrado({
@@ -13,6 +17,10 @@ export default function Quadrado({
   disable,
   position,
   funcao,
+  tabuleiro,
+  setVez,
+  setStatus,
+  setTabuleiro,
 }: IQuadradoProps) {
   const style = StyleSheet.create({
     quadrado: {
@@ -24,11 +32,16 @@ export default function Quadrado({
       width: "10rem",
       margin: 5,
     },
-    titulo: { fontSize: "xxx-large", fontWeight: "bold" },
+    titulo: { fontSize: 50, fontWeight: "bold" },
   });
 
   return (
-    <TouchableOpacity onPress={() => funcao(position)} disabled={disable}>
+    <TouchableOpacity
+      onPress={() =>
+        funcao(position, tabuleiro, setTabuleiro, setStatus, setVez)
+      }
+      disabled={disable}
+    >
       <View style={style.quadrado}>
         <Text style={style.titulo}>{value}</Text>
       </View>

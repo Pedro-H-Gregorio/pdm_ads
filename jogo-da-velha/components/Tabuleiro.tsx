@@ -9,6 +9,28 @@ export class Tabuleiro {
     return jogada;
   }
 
+  jogadaCPU(
+    tabuleiro: Array<String>,
+    setTabuleiro: Function,
+    setStatus: Function,
+    setVezJogador: Function
+  ) {
+    let camposLivres: number[] = [];
+    tabuleiro.forEach(
+      (element, index) => element == "" && camposLivres.push(index)
+    );
+    let jogada = this.escolheJogada(camposLivres);
+    let novoTabuleiro = [...tabuleiro];
+    novoTabuleiro[jogada] = "O";
+    setTabuleiro(novoTabuleiro);
+    const winner = this.calculateWinner(novoTabuleiro);
+    if (winner) {
+      setStatus(1);
+    } else {
+      setVezJogador(true);
+    }
+  }
+
   calculateWinner(tabuleiro: Array<String>) {
     const linhas = [
       [0, 1, 2],

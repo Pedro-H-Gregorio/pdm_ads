@@ -1,4 +1,5 @@
 import Quadrado from "@/components/Quadrado";
+import { Tabuleiro } from "@/components/Tabuleiro";
 import { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Button } from "react-native";
 
@@ -16,7 +17,7 @@ export default function Index() {
       margin: 0,
       padding: 0,
     },
-    titulo: { fontSize: "xx-large", fontWeight: "bold" },
+    titulo: { fontSize: 40, fontWeight: "bold" },
   });
 
   let [tabuleiro, setTabuleiro] = useState(new Array(9).fill(""));
@@ -88,7 +89,9 @@ export default function Index() {
 
   useEffect(() => {
     if (!vezJogador) {
-      jogadaCPU(tabuleiro);
+      jogadaCPU(
+        tabuleiro
+      );
     }
   }, [vezJogador]);
 
@@ -118,13 +121,17 @@ export default function Index() {
             value={valor}
             disable={!vezJogador || status != 0}
             position={index}
+            tabuleiro={tabuleiro}
+            setVez={setVezJogador}
+            setStatus={setStatus}
+            setTabuleiro={setTabuleiro}
             funcao={lidarComVez}
           />
         ))}
       </View>
       <Button
         title="Jogar de novo"
-        disabled={!tabuleiro.some((el) => el == "") || status == 0}
+        disabled={status == 0 || tabuleiro.some((el) => el == "")}
         onPress={() => {
           setTabuleiro(tabuleiro.fill(""));
           setVezJogador(true);
