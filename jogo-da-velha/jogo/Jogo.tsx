@@ -9,7 +9,7 @@ export class Jogo {
   partida: Partida;
 
   constructor(jogador: string) {
-    this.numeroPartidas = 0;
+    this.numeroPartidas = 1;
     this.jogador = new Jogador(jogador);
     this.CPUJogador = new CPUJogador();
     this.partida = new Partida(this.jogador, this.CPUJogador);
@@ -18,12 +18,6 @@ export class Jogo {
   adicionarPartida() {
     this.numeroPartidas++;
     this.partida = new Partida(this.jogador, this.CPUJogador);
-  }
-
-  reiniciarJogo() {
-    this.numeroPartidas = 0;
-    this.jogador.reiniciarPontos();
-    this.CPUJogador.reiniciarPontos();
   }
 
   getNumeroPartidas() {

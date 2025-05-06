@@ -13,6 +13,7 @@ export class CPUJogador extends Jogador {
     let jogada = this.escolheJogada(camposLivres);
     return jogada;
   }
+
   escolheJogada(campos: Array<number>) {
     let jogada = Math.round(Math.random() * 10);
     while (!campos.includes(jogada) && campos.length > 0) {
