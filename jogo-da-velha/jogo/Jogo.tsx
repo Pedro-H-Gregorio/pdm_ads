@@ -12,6 +12,7 @@ export class Jogo {
     this.numeroPartidas = 0;
     this.jogador = new Jogador(jogador);
     this.CPUJogador = new CPUJogador();
+    this.partida = new Partida(this.jogador, this.CPUJogador);
   }
 
   adicionarPartida() {
@@ -27,5 +28,15 @@ export class Jogo {
 
   getNumeroPartidas() {
     return this.numeroPartidas;
+  }
+
+  getJogador() {
+    return this.jogador;
+  }
+  getCPUJogador() {
+    return this.CPUJogador;
+  }
+  getPartida() {
+    return this.partida;
   }
 }

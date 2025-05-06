@@ -14,7 +14,7 @@ export class Jogador {
     return this.vitorias;
   }
   adicionarVitoria() {
-    this.vitorias++;
+    this.vitorias = this.vitorias + 1;
   }
   reiniciarPontos() {
     this.vitorias = 0;

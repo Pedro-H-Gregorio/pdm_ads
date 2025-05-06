@@ -2,14 +2,11 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface IQuadradoProps {
-  value: String;
-  disable: boolean;
-  position: Number;
-  funcao: Function;
-  tabuleiro: Array<String>;
-  setVez: Function;
-  setStatus: Function;
-  setTabuleiro: Function;
+  readonly value: string;
+  readonly disable: boolean;
+  readonly position: number;
+  readonly funcao: Function;
+  readonly lado: number;
 }
 
 export default function Quadrado({
@@ -17,10 +14,7 @@ export default function Quadrado({
   disable,
   position,
   funcao,
-  tabuleiro,
-  setVez,
-  setStatus,
-  setTabuleiro,
+  lado,
 }: IQuadradoProps) {
   const style = StyleSheet.create({
     quadrado: {
@@ -28,20 +22,16 @@ export default function Quadrado({
       color: "white",
       alignItems: "center",
       justifyContent: "center",
-      height: "10rem",
-      width: "10rem",
-      margin: 5,
+      height: lado,
+      width: lado,
+      borderWidth: 1,
+      borderColor: "black",
     },
     titulo: { fontSize: 50, fontWeight: "bold" },
   });
 
   return (
-    <TouchableOpacity
-      onPress={() =>
-        funcao(position, tabuleiro, setTabuleiro, setStatus, setVez)
-      }
-      disabled={disable}
-    >
+    <TouchableOpacity onPress={() => funcao(position)} disabled={disable}>
       <View style={style.quadrado}>
         <Text style={style.titulo}>{value}</Text>
       </View>

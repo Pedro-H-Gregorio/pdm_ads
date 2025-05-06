@@ -1,143 +1,125 @@
-import Quadrado from "@/components/Quadrado";
+import { Cabecalho } from "@/components/Cabecalho";
+import { Rodape } from "@/components/Rodape";
 import { Tabuleiro } from "@/components/Tabuleiro";
-import { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Button } from "react-native";
+import { StatusPartida } from "@/jogo/EnumStatusPartida";
+import { Jogo } from "@/jogo/Jogo";
+import { Partida } from "@/jogo/Partida";
+import { useState, useEffect, useRef } from "react";
+import { Button, StyleSheet, View, useWindowDimensions } from "react-native";
 
 export default function Index() {
+  const { width } = useWindowDimensions();
+  const lado: number = Math.floor((width - 20) / 3);
+
   const style = StyleSheet.create({
-    tabuleiro: {
-      display: "grid",
-      justifyContent: "space-evenly",
-      justifyItems: "stretch",
-      alignItems: "stretch",
-      alignContent: "center",
-      gridTemplateColumns: "repeat(3, 1fr)",
-      gridTemplateCows: "repeat(3, 1fr)",
-      backgroundColor: "black",
-      margin: 0,
-      padding: 0,
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 10,
     },
-    titulo: { fontSize: 40, fontWeight: "bold" },
   });
 
-  let [tabuleiro, setTabuleiro] = useState(new Array(9).fill(""));
-  let [vezJogador, setVezJogador] = useState(true);
-  let [status, setStatus] = useState(0);
+  let jogoRef = useRef<Jogo>(new Jogo("Pedro"));
+  let partidaRef = useRef<Partida>(jogoRef.current.getPartida());
 
-  function lidarComVez(posicao: number) {
-    const novoTabuleiro = [...tabuleiro];
-    if (novoTabuleiro[posicao] === "") {
-      novoTabuleiro[posicao] = "X";
-      setTabuleiro(novoTabuleiro);
-      const winner = calculateWinner(novoTabuleiro);
-      if (winner) {
-        setStatus(1);
-      } else {
-        setVezJogador(false);
-      }
-    }
-  }
+  const jogador1 = jogoRef.current.getJogador().getNome();
+  const cpu = jogoRef.current.getCPUJogador().getNome();
 
-  function escolheJogada(campos: Array<number>) {
-    let jogada = Math.round(Math.random() * 10);
-    while (!campos.includes(jogada) && campos.length > 0) {
-      jogada = Math.round(Math.random() * 10);
-    }
-    return jogada;
-  }
+  const [vitoriasJogador, setVitoriasJogador] = useState<number>(
+    jogoRef.current.getJogador().getVitorias()
+  );
+  const [vitoriasCpu, setVitoriasCpu] = useState<number>(
+    jogoRef.current.getCPUJogador().getVitorias()
+  );
+  const [numPartidas, setNumPartidas] = useState<number>(
+    jogoRef.current.getNumeroPartidas()
+  );
 
-  function jogadaCPU(tabuleiro: Array<String>) {
-    let camposLivres: number[] = [];
-    tabuleiro.forEach(
-      (element, index) => element == "" && camposLivres.push(index)
-    );
-    let jogada = escolheJogada(camposLivres);
-    let novoTabuleiro = [...tabuleiro];
-    novoTabuleiro[jogada] = "O";
-    setTabuleiro(novoTabuleiro);
-    const winner = calculateWinner(novoTabuleiro);
-    if (winner) {
-      setStatus(1);
-    } else {
-      setVezJogador(true);
-    }
-  }
-
-  function calculateWinner(tabuleiro: Array<String>) {
-    const linhas = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
-    for (let i = 0; i < linhas.length; i++) {
-      const [a, b, c] = linhas[i];
-      if (
-        tabuleiro[a] &&
-        tabuleiro[a] === tabuleiro[b] &&
-        tabuleiro[a] === tabuleiro[c]
-      ) {
-        return tabuleiro[a];
-      }
-    }
-    return null;
-  }
+  const [tabuleiro, setTabuleiro] = useState<string[]>(
+    partidaRef.current.getTabuleiro()
+  );
+  const [vezJogador, setVezJogador] = useState<boolean>(
+    partidaRef.current.getVezJogador()
+  );
+  const [statusPartida, setStatusPartida] = useState<number>(
+    partidaRef.current.getStatus()
+  );
 
   useEffect(() => {
-    if (!vezJogador) {
-      jogadaCPU(
-        tabuleiro
-      );
+    if (partidaRef.current.getVezJogador() === false) {
+      partidaRef.current.jogadaCPU();
+      setTabuleiro(partidaRef.current.getTabuleiro());
+      setVezJogador(partidaRef.current.getVezJogador());
+      monitorarStatusPartida();
     }
   }, [vezJogador]);
 
-  function definirTitulo(vez: boolean, status: number, tabuleiro: string[]) {
-    if (tabuleiro.some((el) => el == "")) {
-      return (
-        (status ? `Ganhador: ` : `Vez: `) + (vezJogador ? "Jogador" : "CPU")
-      );
-    } else return "Empate";
+  useEffect(() => {
+    if (statusPartida === StatusPartida.VITORIA_CPU) {
+      setVitoriasCpu(jogoRef.current.CPUJogador.getVitorias());
+    } else if (statusPartida === StatusPartida.VITORIA_JOGADOR) {
+      setVitoriasJogador(jogoRef.current.jogador.getVitorias());
+    }
+  }, [statusPartida]);
+
+  function monitorarStatusPartida() {
+    if (partidaRef.current.getStatus() != statusPartida) {
+      setStatusPartida(partidaRef.current.getStatus());
+    }
+  }
+
+  function finalizaPartida() {
+    jogoRef.current.adicionarPartida();
+    setNumPartidas(jogoRef.current.getNumeroPartidas());
+    partidaRef.current = jogoRef.current.getPartida();
+    setTabuleiro(partidaRef.current.getTabuleiro());
+    setVezJogador(partidaRef.current.getVezJogador());
+    setStatusPartida(partidaRef.current.getStatus());
+  }
+
+  function joga(posicao: number) {
+    partidaRef.current.jogada(posicao);
+    setTabuleiro(partidaRef.current.getTabuleiro());
+    setVezJogador(partidaRef.current.getVezJogador());
+    monitorarStatusPartida();
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text style={style.titulo}>
-        {definirTitulo(vezJogador, status, tabuleiro)}
-      </Text>
-      <View style={style.tabuleiro}>
-        {tabuleiro.map((valor, index) => (
-          <Quadrado
-            key={index}
-            value={valor}
-            disable={!vezJogador || status != 0}
-            position={index}
-            tabuleiro={tabuleiro}
-            setVez={setVezJogador}
-            setStatus={setStatus}
-            setTabuleiro={setTabuleiro}
-            funcao={lidarComVez}
-          />
-        ))}
-      </View>
-      <Button
-        title="Jogar de novo"
-        disabled={status == 0 || tabuleiro.some((el) => el == "")}
-        onPress={() => {
-          setTabuleiro(tabuleiro.fill(""));
-          setVezJogador(true);
-          setStatus(0);
-        }}
+    <View style={style.container}>
+      <Cabecalho
+        jogador1={jogador1}
+        vitoriasJogador1={vitoriasJogador}
+        jogador2={cpu}
+        vitoriasJogador2={vitoriasCpu}
+        partidas={numPartidas}
+        vezJogador={vezJogador}
       />
+
+      <Tabuleiro
+        lado={lado}
+        tabuleiro={tabuleiro}
+        jogada={joga}
+        disable={statusPartida != StatusPartida.EM_ANDAMENTO}
+        vezJogador={vezJogador}
+      />
+
+      {statusPartida != StatusPartida.EM_ANDAMENTO &&
+        statusPartida != StatusPartida.EMPATE && (
+          <>
+            <Rodape
+              jogador={
+                statusPartida == StatusPartida.VITORIA_JOGADOR ? jogador1 : cpu
+              }
+            />
+            <Button
+              title="Jogar de novo"
+              onPress={() => {
+                finalizaPartida();
+              }}
+            />
+          </>
+        )}
     </View>
   );
 }

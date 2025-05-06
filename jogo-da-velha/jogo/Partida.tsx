@@ -60,25 +60,24 @@ export class Partida {
   jogada(posicao: number) {
     const novoTabuleiro = [...this.tabuleiro];
     if (novoTabuleiro[posicao] === "") {
-      novoTabuleiro[posicao] = "X";
+      novoTabuleiro[posicao] = this.vezJogador ? "X" : "O";
       this.tabuleiro = novoTabuleiro;
       const winner = this.calcularGanhador(novoTabuleiro);
       if (winner) {
-        this.status = StatusPartida.VITORIA_JOGADOR;
-        this.jogador1.adicionarVitoria();
+        if (this.vezJogador) {
+          this.status = StatusPartida.VITORIA_JOGADOR;
+          this.jogador1.adicionarVitoria();
+        } else {
+          this.status = StatusPartida.VITORIA_CPU;
+          this.jogador2.adicionarVitoria();
+        }
       } else {
-        this.vezJogador = false;
+        this.vezJogador = !this.vezJogador;
       }
     }
   }
 
   jogadaCPU() {
     this.jogada(this.jogador2.escolherJogada(this.tabuleiro));
-    const winner = this.calcularGanhador(this.tabuleiro);
-    if (winner) {
-      this.status = StatusPartida.VITORIA_CPU;
-      this.jogador2.adicionarVitoria();
-    }
-    this.vezJogador = true;
   }
 }
